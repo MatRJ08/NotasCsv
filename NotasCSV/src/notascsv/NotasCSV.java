@@ -144,7 +144,7 @@ public class NotasCSV extends Application {
             String line;
             while ((line = br.readLine()) != null) {
                 String[] fields = line.split(FieldDelimiter, -1);
-                System.out.println(fields[0]);
+                System.out.println(fields[1]);
                
  
             }
