@@ -5,14 +5,21 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import javafx.geometry.Rectangle2D;
 import javafx.application.Application;
 import javafx.scene.Scene;
+import javafx.stage.Screen;
 import javafx.scene.control.Button;
 import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
+import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableView;
+import javafx.scene.control.cell.PropertyValueFactory;
 
 /**
  *
@@ -114,7 +121,7 @@ public class NotasCSV extends Application {
         
         
     }
-    
+    TableView tableEstudiantes = new TableView();
     @Override
     public void start(Stage primaryStage) {        
         primaryStage.setTitle("Notas Estudiantes");
@@ -124,13 +131,23 @@ public class NotasCSV extends Application {
             File selectedFile = fileChooser.showOpenDialog(primaryStage);//Evento con File chooser tomado de 
             readCSV(selectedFile);
         });                                                              //http://tutorials.jenkov.com/javafx/filechooser.html
-        
-        VBox vBox = new VBox(btn);
+        VBox vBox = new VBox();
+        vBox.getChildren().addAll(btn,tableEstudiantes);
         Scene scene = new Scene(vBox, 960, 600);
+        
+        Rectangle2D primaryScreenBounds = Screen.getPrimary().getVisualBounds();
 
         primaryStage.setScene(scene);
+        primaryStage.setX(primaryScreenBounds.getMinX());
+        primaryStage.setY(primaryScreenBounds.getMinY());
+        primaryStage.setWidth(primaryScreenBounds.getWidth());
+        primaryStage.setHeight(primaryScreenBounds.getHeight());
         primaryStage.show();
     }
+    
+    
+    
+    
     
     private void readCSV(File selectedFile) {//Funcion read CSV tomada de:
                                             //http://java-buddy.blogspot.com/2016/06/read-csv-file-display-in-javafx.html
@@ -142,11 +159,14 @@ public class NotasCSV extends Application {
             br = new BufferedReader(new FileReader(selectedFile));
  
             String line;
+            
+            Boolean isHeader = true;
+            
             while ((line = br.readLine()) != null) {
                 String[] fields = line.split(FieldDelimiter, -1);
-                System.out.println(fields[1]);
-               
- 
+                System.out.println(fields[0]);
+                Agnadir_Field(fields,isHeader);
+                isHeader = false;
             }
  
         } catch (FileNotFoundException ex) {
@@ -157,6 +177,24 @@ public class NotasCSV extends Application {
                     .log(Level.SEVERE, null, ex);
         }
  
+    }
+    
+    
+    
+    public void Agnadir_Field(String[] field, Boolean isHeader){
+        if(isHeader){
+            TableColumn col;
+            for(int i=0; i < field.length ;i++){
+                col = new TableColumn(field[i]);
+                col.setCellValueFactory(new PropertyValueFactory<>(field[i]));
+                col.prefWidthProperty().bind(tableEstudiantes.widthProperty().multiply(0.08));
+                tableEstudiantes.getColumns().add(col);
+            }         
+        }else{
+            if(field[5]=="A"){
+                
+            }
+        }
     }
 
     public static void main(String[] args) {
